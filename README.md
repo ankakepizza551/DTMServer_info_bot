@@ -77,11 +77,19 @@ async def setup(bot: commands.Bot) -> None:
     await bot.add_cog(MyFeature(bot))
 ```
 
-## デプロイ(VPS/クラウド想定)
+## デプロイ
 
-Dockerfileを同梱。例:
+### Railway
+
+1. Railwayダッシュボードで「New Project」→「Deploy from GitHub repo」からこのリポジトリを選択する
+2. `railway.json` によりDockerfileビルドが自動選択される
+3. Variables に `DISCORD_TOKEN` を設定する(`GUILD_ID` は任意)
+4. このBotはWebサーバーではない常駐ワーカーなので、Settings で公開ポートの割り当ては不要
+5. `data/bot.db` (作業ログ・機材DBなど) を再デプロイ後も残したい場合は、Settings → Volumes で `/app/data` にVolumeをマウントする(マウントしないと再デプロイのたびにDBが初期化される)
+
+### 汎用 VPS / Docker
 
 ```
 docker build -t dtm-bot .
-docker run -d --env-file .env --name dtm-bot dtm-bot
+docker run -d --env-file .env -v $(pwd)/data:/app/data --name dtm-bot dtm-bot
 ```
