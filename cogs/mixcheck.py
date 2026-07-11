@@ -16,6 +16,9 @@ class MixCheck(commands.Cog):
     @app_commands.command(name="mixcheck_submit", description="ミックスチェックを依頼します")
     @app_commands.describe(url="音源のURL", note="確認してほしいポイントなど(任意)")
     async def mixcheck_submit(self, interaction: discord.Interaction, url: str, note: str | None = None) -> None:
+        await self.do_submit(interaction, url, note)
+
+    async def do_submit(self, interaction: discord.Interaction, url: str, note: str | None = None) -> None:
         embed = discord.Embed(
             title="🎚️ ミックスチェック依頼",
             description=note or "",
@@ -40,6 +43,9 @@ class MixCheck(commands.Cog):
 
     @app_commands.command(name="mixcheck_queue", description="レビュー待ちのミックスチェック一覧を表示します")
     async def mixcheck_queue(self, interaction: discord.Interaction) -> None:
+        await self.do_queue(interaction)
+
+    async def do_queue(self, interaction: discord.Interaction) -> None:
         db = get_db()
         cursor = await db.execute(
             "SELECT url, user_id, channel_id, message_id, created_at FROM mix_requests "

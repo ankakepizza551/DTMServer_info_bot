@@ -56,6 +56,9 @@ class Projects(commands.Cog):
     @app_commands.command(name="projects", description="最近共有されたDAWプロジェクトファイルの一覧を表示します")
     @app_commands.describe(count="表示件数(デフォルト10、最大25)")
     async def projects(self, interaction: discord.Interaction, count: int = 10) -> None:
+        await self.do_projects(interaction, count)
+
+    async def do_projects(self, interaction: discord.Interaction, count: int = 10) -> None:
         count = max(1, min(count, 25))
         db = get_db()
         cursor = await db.execute(

@@ -14,6 +14,9 @@ class Schedule(commands.Cog):
     @app_commands.command(name="session_propose", description="練習/セッションの日程を提案し、リアクションで参加可否を集めます")
     @app_commands.describe(date="候補日時(例: 2026/07/10 21:00)", note="内容・メモ(任意)")
     async def session_propose(self, interaction: discord.Interaction, date: str, note: str | None = None) -> None:
+        await self.do_propose(interaction, date, note)
+
+    async def do_propose(self, interaction: discord.Interaction, date: str, note: str | None = None) -> None:
         embed = discord.Embed(
             title="🗓️ セッション日程調整",
             description=note or "",

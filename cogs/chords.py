@@ -54,6 +54,9 @@ class Chords(commands.Cog):
         ]
     )
     async def chords(self, interaction: discord.Interaction, root: str, mode: app_commands.Choice[str]) -> None:
+        await self.do_chords(interaction, root, mode.value)
+
+    async def do_chords(self, interaction: discord.Interaction, root: str, mode_value: str) -> None:
         root_index = parse_note(root)
         if root_index is None:
             await interaction.response.send_message(
@@ -61,7 +64,13 @@ class Chords(commands.Cog):
             )
             return
 
-        if mode.value == "major":
+        if mode_value not in ("major", "minor"):
+            await interaction.response.send_message(
+                "モードは `major` か `minor` で指定してください。", ephemeral=True
+            )
+            return
+
+        if mode_value == "major":
             intervals, qualities, progressions = MAJOR_SCALE_INTERVALS, MAJOR_DEGREE_QUALITIES, MAJOR_PROGRESSIONS
         else:
             intervals, qualities, progressions = (
@@ -76,7 +85,7 @@ class Chords(commands.Cog):
             lines.append(f"**{name}**\n{' - '.join(chord_names)}")
 
         embed = discord.Embed(
-            title=f"{NOTE_NAMES[root_index]} {mode.name} の定番コード進行",
+            title=f"{NOTE_NAMES[root_index]} {mode_value.capitalize()} の定番コード進行",
             description="\n\n".join(lines),
             color=discord.Color.purple(),
         )
@@ -91,6 +100,9 @@ class Chords(commands.Cog):
         ]
     )
     async def chordrandom(self, interaction: discord.Interaction, root: str, mode: app_commands.Choice[str]) -> None:
+        await self.do_chordrandom(interaction, root, mode.value)
+
+    async def do_chordrandom(self, interaction: discord.Interaction, root: str, mode_value: str) -> None:
         root_index = parse_note(root)
         if root_index is None:
             await interaction.response.send_message(
@@ -98,7 +110,13 @@ class Chords(commands.Cog):
             )
             return
 
-        if mode.value == "major":
+        if mode_value not in ("major", "minor"):
+            await interaction.response.send_message(
+                "モードは `major` か `minor` で指定してください。", ephemeral=True
+            )
+            return
+
+        if mode_value == "major":
             intervals, qualities, progressions = MAJOR_SCALE_INTERVALS, MAJOR_DEGREE_QUALITIES, MAJOR_PROGRESSIONS
         else:
             intervals, qualities, progressions = (
@@ -111,7 +129,7 @@ class Chords(commands.Cog):
         chord_names = [build_chord_name(root_index, root_index, intervals, qualities, d) for d in degrees]
 
         embed = discord.Embed(
-            title=f"{NOTE_NAMES[root_index]} {mode.name} - {name}",
+            title=f"{NOTE_NAMES[root_index]} {mode_value.capitalize()} - {name}",
             description=" - ".join(chord_names),
             color=discord.Color.purple(),
         )

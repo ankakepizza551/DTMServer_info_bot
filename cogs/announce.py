@@ -26,6 +26,17 @@ class Announce(commands.Cog):
         image_url: str | None = None,
         mention_role: discord.Role | None = None,
     ) -> None:
+        await self.do_release(interaction, title, url, note, image_url, mention_role)
+
+    async def do_release(
+        self,
+        interaction: discord.Interaction,
+        title: str,
+        url: str,
+        note: str | None = None,
+        image_url: str | None = None,
+        mention_role: discord.Role | None = None,
+    ) -> None:
         embed = discord.Embed(
             title=f"🎵 New Release: {title}",
             url=url,
@@ -48,6 +59,16 @@ class Announce(commands.Cog):
         mention_role="通知したいロール(任意)",
     )
     async def announce_collab(
+        self,
+        interaction: discord.Interaction,
+        title: str,
+        description: str,
+        deadline: str | None = None,
+        mention_role: discord.Role | None = None,
+    ) -> None:
+        await self.do_collab(interaction, title, description, deadline, mention_role)
+
+    async def do_collab(
         self,
         interaction: discord.Interaction,
         title: str,

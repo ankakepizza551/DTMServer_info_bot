@@ -63,6 +63,9 @@ class Metronome(commands.Cog):
     @app_commands.command(name="metronome_start", description="ボイスチャンネルでメトロノームを再生します")
     @app_commands.describe(bpm="再生するBPM (例: 120)")
     async def metronome_start(self, interaction: discord.Interaction, bpm: float) -> None:
+        await self.do_start(interaction, bpm)
+
+    async def do_start(self, interaction: discord.Interaction, bpm: float) -> None:
         if not (20 <= bpm <= 300):
             await interaction.response.send_message("BPMは20〜300の範囲で指定してください。", ephemeral=True)
             return
@@ -93,6 +96,9 @@ class Metronome(commands.Cog):
 
     @app_commands.command(name="metronome_stop", description="メトロノームを停止してボイスチャンネルから退出します")
     async def metronome_stop(self, interaction: discord.Interaction) -> None:
+        await self.do_stop(interaction)
+
+    async def do_stop(self, interaction: discord.Interaction) -> None:
         guild_id = interaction.guild_id
         task = self._tasks.pop(guild_id, None)
         if task is not None:

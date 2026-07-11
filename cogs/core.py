@@ -11,11 +11,17 @@ class Core(commands.Cog):
 
     @app_commands.command(name="ping", description="Botの応答速度を確認します")
     async def ping(self, interaction: discord.Interaction) -> None:
+        await self.do_ping(interaction)
+
+    async def do_ping(self, interaction: discord.Interaction) -> None:
         latency_ms = round(self.bot.latency * 1000)
         await interaction.response.send_message(f"Pong! `{latency_ms}ms`")
 
     @app_commands.command(name="serverinfo", description="このサーバーの情報を表示します")
     async def serverinfo(self, interaction: discord.Interaction) -> None:
+        await self.do_serverinfo(interaction)
+
+    async def do_serverinfo(self, interaction: discord.Interaction) -> None:
         guild = interaction.guild
         if guild is None:
             await interaction.response.send_message("このコマンドはサーバー内でのみ使用できます。", ephemeral=True)

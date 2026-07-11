@@ -44,6 +44,9 @@ class DTM(commands.Cog):
     @app_commands.command(name="bpmdelay", description="BPMからディレイ/LFOに使えるms換算表を表示します")
     @app_commands.describe(bpm="曲のBPM (例: 128)")
     async def bpmdelay(self, interaction: discord.Interaction, bpm: float) -> None:
+        await self.do_bpmdelay(interaction, bpm)
+
+    async def do_bpmdelay(self, interaction: discord.Interaction, bpm: float) -> None:
         if bpm <= 0:
             await interaction.response.send_message("BPMは正の数で指定してください。", ephemeral=True)
             return
@@ -65,6 +68,9 @@ class DTM(commands.Cog):
         scale=[app_commands.Choice(name=name.replace("_", " "), value=name) for name in SCALE_INTERVALS]
     )
     async def scale(self, interaction: discord.Interaction, root: str, scale: app_commands.Choice[str]) -> None:
+        await self.do_scale(interaction, root, scale.value)
+
+    async def do_scale(self, interaction: discord.Interaction, root: str, scale_key: str) -> None:
         root_index = parse_note(root)
         if root_index is None:
             await interaction.response.send_message(
@@ -72,11 +78,19 @@ class DTM(commands.Cog):
             )
             return
 
-        intervals = SCALE_INTERVALS[scale.value]
+        if scale_key not in SCALE_INTERVALS:
+            await interaction.response.send_message(
+                f"'{scale_key}' はスケール名として認識できませんでした。使えるのは: "
+                f"`{'`, `'.join(SCALE_INTERVALS)}`",
+                ephemeral=True,
+            )
+            return
+
+        intervals = SCALE_INTERVALS[scale_key]
         notes = [NOTE_NAMES[(root_index + interval) % 12] for interval in intervals]
 
         embed = discord.Embed(
-            title=f"{NOTE_NAMES[root_index]} {scale.name}",
+            title=f"{NOTE_NAMES[root_index]} {scale_key.replace('_', ' ')}",
             description=" - ".join(notes),
             color=discord.Color.orange(),
         )

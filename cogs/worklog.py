@@ -14,6 +14,9 @@ class WorkLog(commands.Cog):
     @app_commands.command(name="log", description="今日やった作業を記録します")
     @app_commands.describe(content="作業内容")
     async def log(self, interaction: discord.Interaction, content: str) -> None:
+        await self.do_log(interaction, content)
+
+    async def do_log(self, interaction: discord.Interaction, content: str) -> None:
         db = get_db()
         await db.execute(
             "INSERT INTO work_logs (guild_id, user_id, content) VALUES (?, ?, ?)",
@@ -25,6 +28,11 @@ class WorkLog(commands.Cog):
     @app_commands.command(name="worklog", description="直近の作業ログを表示します")
     @app_commands.describe(member="表示するメンバー(未指定なら自分)", count="表示件数(デフォルト10、最大25)")
     async def worklog(
+        self, interaction: discord.Interaction, member: discord.Member | None = None, count: int = 10
+    ) -> None:
+        await self.do_worklog(interaction, member, count)
+
+    async def do_worklog(
         self, interaction: discord.Interaction, member: discord.Member | None = None, count: int = 10
     ) -> None:
         target = member or interaction.user

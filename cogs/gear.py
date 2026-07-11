@@ -19,17 +19,29 @@ class Gear(commands.Cog):
         category=[app_commands.Choice(name=c, value=c) for c in CATEGORY_CHOICES]
     )
     async def gear_add(self, interaction: discord.Interaction, category: app_commands.Choice[str], name: str) -> None:
+        await self.do_gear_add(interaction, category.value, name)
+
+    async def do_gear_add(self, interaction: discord.Interaction, category: str, name: str) -> None:
+        if category not in CATEGORY_CHOICES:
+            await interaction.response.send_message(
+                f"カテゴリは次のいずれかで指定してください: `{'`, `'.join(CATEGORY_CHOICES)}`", ephemeral=True
+            )
+            return
+
         db = get_db()
         await db.execute(
             "INSERT INTO gear (guild_id, user_id, category, name) VALUES (?, ?, ?, ?)",
-            (interaction.guild_id, interaction.user.id, category.value, name),
+            (interaction.guild_id, interaction.user.id, category, name),
         )
         await db.commit()
-        await interaction.response.send_message(f"登録しました: **{category.value}** / {name}")
+        await interaction.response.send_message(f"登録しました: **{category}** / {name}")
 
     @app_commands.command(name="gear_search", description="カテゴリや製品名でメンバーの機材を検索します")
     @app_commands.describe(keyword="カテゴリ名または製品名の一部")
     async def gear_search(self, interaction: discord.Interaction, keyword: str) -> None:
+        await self.do_gear_search(interaction, keyword)
+
+    async def do_gear_search(self, interaction: discord.Interaction, keyword: str) -> None:
         db = get_db()
         like = f"%{keyword}%"
         cursor = await db.execute(
@@ -55,6 +67,9 @@ class Gear(commands.Cog):
     @app_commands.command(name="gear_list", description="メンバーが登録した機材一覧を表示します")
     @app_commands.describe(member="表示するメンバー(未指定なら自分)")
     async def gear_list(self, interaction: discord.Interaction, member: discord.Member | None = None) -> None:
+        await self.do_gear_list(interaction, member)
+
+    async def do_gear_list(self, interaction: discord.Interaction, member: discord.Member | None = None) -> None:
         target = member or interaction.user
         db = get_db()
         cursor = await db.execute(
