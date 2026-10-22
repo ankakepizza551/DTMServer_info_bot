@@ -1,3 +1,7 @@
-discord.py[voice]>=2.4.0
+discord.py>=2.4.0
+# discord.py[voice] は PyNaCl<1.6 に固定していて CVE-2025-69277 の修正版を入れられないため、
+# voice の依存を個別に指定する（discord.py の音声暗号化は 1.6 系でも同じ結果になることを確認済み）
+PyNaCl>=1.6.2
+davey>=0.1.0
 python-dotenv>=1.0.1
 aiosqlite>=0.20.0
